@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+  />
+  <title>Car AR Viewer</title>
+
+  <!-- model-viewer (latest v4) -->
+  <script
+    type="module"
+    src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"
+  ></script>
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot"></span>
+      <span>Car AR Viewer</span>
+    </div>
+    <div class="actions">
+      <label class="file-btn" title="Load your own .glb / .gltf car model">
+        <input id="file-input" type="file" accept=".glb,.gltf" hidden />
+        <span>Upload model</span>
+      </label>
+      <button id="reset-btn" class="ghost-btn" title="Reset transforms">
+        Reset
+      </button>
+    </div>
+  </header>
+
+  <main class="stage">
+    <model-viewer
+      id="viewer"
+      src="models/volvo_s90_recharge_free.glb"
+      alt="Volvo S90 Recharge — place in AR on the ground"
+      ar
+      ar-modes="webxr scene-viewer quick-look"
+      ar-placement="floor"
+      ar-scale="auto"
+      camera-controls
+      touch-action="pan-y"
+      shadow-intensity="1"
+      shadow-softness="0.8"
+      exposure="1"
+      environment-image="neutral"
+      auto-rotate
+      auto-rotate-delay="3000"
+      rotation-per-second="15deg"
+      interaction-prompt="auto"
+    >
+      <!-- Custom AR activation button -->
+      <button slot="ar-button" id="ar-button">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path
+            fill="currentColor"
+            d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3 6.5 3.6L12 11.5 5.5 7.9 12 4.3ZM5 9.7l6 3.4v7.1l-6-3.3V9.7Zm8 10.5v-7.1l6-3.4v7.2l-6 3.3Z"
+          />
+        </svg>
+        View in your space
+      </button>
+
+      <!-- Loading indicator -->
+      <div slot="progress-bar" class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+    </model-viewer>
+
+    <!-- Interaction hint for AR -->
+    <div class="hint" id="ar-hint">
+      <strong>In AR:</strong>
+      one finger drag to move · two fingers twist to rotate · pinch to scale
+    </div>
+  </main>
+
+  <!-- Manual controls (work in the non-AR preview) -->
+  <section class="panel">
+    <div class="panel-head">
+      <span>Model controls</span>
+      <small>Preview mode · in AR these gestures are built-in</small>
+    </div>
+
+    <div class="control">
+      <label for="rot-y">Rotate (Y)</label>
+      <input id="rot-y" type="range" min="-180" max="180" value="0" />
+      <span class="val" id="rot-y-val">0°</span>
+    </div>
+
+    <div class="control">
+      <label for="rot-x">Tilt (X)</label>
+      <input id="rot-x" type="range" min="-45" max="45" value="0" />
+      <span class="val" id="rot-x-val">0°</span>
+    </div>
+
+    <div class="control">
+      <label for="scale">Scale</label>
+      <input id="scale" type="range" min="0.3" max="3" step="0.01" value="1" />
+      <span class="val" id="scale-val">1.00×</span>
+    </div>
+
+    <div class="control">
+      <label for="x-pos">Move X</label>
+      <input id="x-pos" type="range" min="-2" max="2" step="0.01" value="0" />
+      <span class="val" id="x-pos-val">0.00 m</span>
+    </div>
+
+    <div class="control">
+      <label for="z-pos">Move Z</label>
+      <input id="z-pos" type="range" min="-2" max="2" step="0.01" value="0" />
+      <span class="val" id="z-pos-val">0.00 m</span>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span>
+      AR works on Android (Chrome) via WebXR and on iOS via Quick Look. On
+      desktop you get a 3D preview.
+    </span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

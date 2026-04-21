@@ -25,8 +25,10 @@ fileInput.addEventListener("change", (e) => {
 const progressFill = document.querySelector(".progress-fill");
 const progressBar = document.querySelector(".progress-bar");
 
+let hidden = false;
 function hideProgressBar() {
-  if (!progressBar) return;
+  if (hidden || !progressBar) return;
+  hidden = true;
   progressBar.style.opacity = "0";
   setTimeout(() => {
     progressBar.style.display = "none";
@@ -34,14 +36,20 @@ function hideProgressBar() {
 }
 
 viewer.addEventListener("progress", (event) => {
-  const p = event.detail.totalProgress || 0;
+  const p = event.detail?.totalProgress ?? 0;
   if (progressFill) progressFill.style.width = `${p * 100}%`;
-  if (p >= 1) hideProgressBar();
+  // Some versions emit a final 0.99 instead of 1.0; hide at 0.99+.
+  if (p >= 0.99) hideProgressBar();
 });
 
-// Belt-and-braces: some browsers never emit a final progress=1 tick,
-// so also hide the bar once the model is fully loaded.
+// Multiple fallbacks — whichever fires first wins.
 viewer.addEventListener("load", hideProgressBar);
+viewer.addEventListener("model-visibility", (e) => {
+  if (e.detail?.visible) hideProgressBar();
+});
+
+// If the model was already loaded before this script attached its listeners.
+if (viewer.loaded) hideProgressBar();
 
 viewer.addEventListener("ar-status", (e) => {
   const status = e.detail.status;

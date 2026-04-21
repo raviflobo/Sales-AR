@@ -6,5 +6,6 @@ npm-debug.log
 .idea/
 *.log
 
-# Original high-res GLB is too large to ship; only the optimized one is deployed.
+# Original high-res GLBs are too large to ship; only the Draco-compressed ones are deployed.
 models/volvo_s90_recharge_free.glb
+models/39cc9966d23c4970baec2b41b3e6dc5b_opt.glb

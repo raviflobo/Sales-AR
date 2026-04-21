@@ -23,16 +23,25 @@ fileInput.addEventListener("change", (e) => {
 });
 
 const progressFill = document.querySelector(".progress-fill");
+const progressBar = document.querySelector(".progress-bar");
+
+function hideProgressBar() {
+  if (!progressBar) return;
+  progressBar.style.opacity = "0";
+  setTimeout(() => {
+    progressBar.style.display = "none";
+  }, 300);
+}
+
 viewer.addEventListener("progress", (event) => {
   const p = event.detail.totalProgress || 0;
   if (progressFill) progressFill.style.width = `${p * 100}%`;
-  if (p >= 1) {
-    setTimeout(() => {
-      const bar = document.querySelector(".progress-bar");
-      if (bar) bar.style.opacity = "0";
-    }, 300);
-  }
+  if (p >= 1) hideProgressBar();
 });
+
+// Belt-and-braces: some browsers never emit a final progress=1 tick,
+// so also hide the bar once the model is fully loaded.
+viewer.addEventListener("load", hideProgressBar);
 
 viewer.addEventListener("ar-status", (e) => {
   const status = e.detail.status;

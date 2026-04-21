@@ -5,3 +5,6 @@ npm-debug.log
 .vscode/
 .idea/
 *.log
+
+# Original high-res GLB is too large to ship; only the optimized one is deployed.
+models/volvo_s90_recharge_free.glb

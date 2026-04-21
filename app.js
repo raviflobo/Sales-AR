@@ -97,12 +97,42 @@ viewer.addEventListener("progress", (event) => {
 // Hide hint while AR session is active (native UI takes over).
 viewer.addEventListener("ar-status", (e) => {
   const status = e.detail.status;
+  const btn = document.getElementById("ar-button");
   if (status === "session-started") {
     arHint.style.display = "none";
+    if (btn) btn.classList.remove("is-loading");
   } else if (status === "not-presenting" || status === "failed") {
     arHint.style.display = "";
+    if (btn) btn.classList.remove("is-loading");
   }
 });
+
+// Prevent double-activation of the AR button on touch devices.
+// Some browsers fire both `touchend` and `click`, and on iOS a rapid retap
+// while Quick Look is still launching can queue a second AR session.
+const arBtn = document.getElementById("ar-button");
+if (arBtn) {
+  let lastTap = 0;
+  arBtn.addEventListener(
+    "click",
+    (e) => {
+      const now = Date.now();
+      if (now - lastTap < 1500 || arBtn.classList.contains("is-loading")) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return;
+      }
+      lastTap = now;
+      arBtn.classList.add("is-loading");
+      arBtn.setAttribute("aria-busy", "true");
+      setTimeout(() => {
+        arBtn.classList.remove("is-loading");
+        arBtn.removeAttribute("aria-busy");
+      }, 3000);
+    },
+    true
+  );
+}
 
 // Initial sync.
 applyOrientation();
